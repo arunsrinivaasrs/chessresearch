@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8"/>
+	<title>PGN to JSON convert</title>
+
+	<script type="text/javascript">
+	var i=0, t,spaces=0;
+			function moves(data)
+			{   //var j=0;
+				var num='';
+				var c=0,d=0;
+				var space_count=0, dot_count=0, l_index, u_index;
+				var num_moves=0;
+				json +="moves\":{";
+				while(i<data.length)
+				{			
+					t+=data.charAt(i+2);			
+					if(data.charCodeAt(i)>=48 && data.charCodeAt(i)<=57 && data.charAt(i+1)==".")
+					{
+						num_moves++;
+					}
+					i++;
+				}
+				for(count=1; count<=num_moves; count++){
+					json+="\""+count+"\":{";
+					json+="\"white\":{\"move\":\""; 
+
+					while(c<t.length)
+					{
+						if(dot_count==1 && space_count==1)
+						{
+							dot_count=0;
+							space_count=0;
+							break;
+						}
+
+						if(t.charAt(c)=="." && dot_count==0)
+						{
+							lower_index=c+1;
+							dot_count++;
+						}
+						if(t.charAt(c)==" " && space_count==0 && dot_count==1)
+						{
+							upper_index=c;
+							console.log(t.charAt(c));
+							space_count++;
+
+						}
+						c++;
+						
+					}
+					f_move=t.substring(lower_index, upper_index);
+					json+=f_move; json+="\"},";
+					json+="\"black\":{\"move\":\""; 
+					
+					while(d<t.length)
+					{
+						if(space_count==2)
+						{
+							space_count=0;
+							break;
+						}
+
+						if(t.charAt(d)==" " || t.charAt(d)== "\n")
+						{
+							if(space_count==0)
+							{
+							l_index=d+1;
+							}
+							else if(space_count==1)
+							{
+							u_index=d;
+							}
+							space_count++;
+						}
+						d++;
+						
+					}
+					s_move=t.substring(l_index, u_index);
+					json+=s_move; json+="\"}";
+					if(count!=num_moves){json+="},";}
+					else if(count==num_moves){json+="}";}
+				}
+				json +="}";	
+				console.log("num of moves "+ num_moves);
+				//alert(data.charAt(i));
+			}
+
+			function header_json(data)
+			{		var close_bracs=0;
+										
+				while(i<data.length)
+				{	
+					if(close_bracs==10)
+					{
+						break;											 	
+					}	
+
+					if(data.charAt(i)=='[')
+					{
+						while(data.charAt(i)!= ']')
+						{
+							
+							if(data.charAt(i) == " " && data.charAt(i+1)=="\"")
+							{	
+									json +="\":";
+							}
+							else if(data.charAt(i)== "\"" && data.charAt(i-1)== " ")
+							{	json +="\"";
+								while(data.charAt(i)!= "\"")
+								{
+									json +=data.charAt(i);
+								}
+							}
+							else
+							{
+								if(data.charAt(i)!='[')
+								{
+									json +=data.charAt(i);
+								}
+							}
+								
+							i++;
+						}
+						json +=",\"";						
+					}
+					if(data.charAt(i)== ']'){
+						close_bracs++;
+						//console.log(close_bracs);
+					}
+					
+					i++;
+
+					
+				}
+			
+				
+			}
+			var json;
+			function init()
+			{
+				var data = document.getElementById("content").innerHTML;
+				//document.getElementById("s").innerHTML = data;
+				//alert(data.length);
+
+				json = "{\"";
+				header_json(data);
+				moves(data);
+				json += "}";
+				console.log(json);
+				//console.log(t);
+				
+				
+			}
+
+			
+	</script>
+
+</head>
+<body>	
+
+		<div id="content">
+			[Event "Earl tourn"]
+			[Site "?"]
+			[Date "1906.??.??"]
+			[Round "?"]
+			[White "Savrov"]
+			[Black "Alekhine, Alexander"]
+			[Result "0-1"]
+			[WhiteElo ""]
+			[BlackElo ""]
+			[ECO "C30"]
+
+			1.e4 e5 2.f4 Bc5 3.Nf3 d6 4.c3 Bg4 5.Be2 Bxf3 6.Bxf3 Nc6 7.b4 Bb6 8.b5 Nce7
+			9.d4 exd4 10.cxd4 Nf6 11.O-O O-O 12.Bb2 d5 13.e5 Nd7 14.Nc3 c6 15.Qd3 Ng6
+			16.g3 f5 17.Kh1 Qe7 18.Nxd5 cxd5 19.Bxd5+ Kh8 20.Ba3 Qd8 21.Bxb7 Rb8 22.Bxf8 Ndxf8
+			23.Bc6 Qxd4 24.Qxf5 Ne7 25.Qc2 Rc8 26.Rad1 Qb4 27.Rb1 Qa5 28.Rf3 Nxc6 29.Rc3 Rd8
+			30.bxc6 Qd5+ 31.Qg2 Qd1+ 32.Qf1 Qd5+ 33.Qf3 Qxa2 34.Rd1 Rxd1+ 35.Qxd1 Ne6
+			36.Qf3 Qb1+ 37.Kg2 g6 38.Qd3 Qg1+ 39.Kh3 h5 40.Qc4 Qd1 41.Rc1 Qg4+ 42.Kg2 h4
+			43.Qf1 g5 44.Qd1 Nxf4+ 45.Kh1  0-1
+		</div>
+			Change:
+		<div id="s">
+
+		</div>
+
+		<form method="GET">
+			<!-- <input type="text" id="text"> -->
+			<!-- <input type="file" name="file" id="file"/> <br><br> -->
+			<input type="button" name="button" id="button" value="Click Here" onclick="init()"/>
+		</form>	
+</body>
+</html>
